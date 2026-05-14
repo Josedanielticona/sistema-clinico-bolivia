@@ -10,21 +10,20 @@ const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setError('');
         try {
             const respuesta = await axios.post('http://localhost:3000/api/auth/login', {
                 username,
                 password
             });
             
-            // Guardamos el token y el rol en el almacenamiento local del navegador
             localStorage.setItem('token', respuesta.data.token);
             localStorage.setItem('rol', respuesta.data.rol);
             localStorage.setItem('usuario', respuesta.data.username);
 
-            // Redirigimos al dashboard principal
             navigate('/dashboard');
         } catch (err) {
-            setError('Credenciales incorrectas o error en el servidor');
+            setError('❌ Usuario o contraseña incorrectos');
         }
     };
 
@@ -34,47 +33,72 @@ const Login = () => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: '#000000', // Negro puro
-            fontFamily: 'Segoe UI, sans-serif'
+            backgroundColor: '#f0f2f5', // El mismo gris claro del Dashboard
+            fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
         },
         tarjeta: {
-            backgroundColor: '#1a1a1a',
-            padding: '40px',
-            borderRadius: '15px',
-            boxShadow: '0 0 20px rgba(212, 175, 55, 0.2)', // Brillo dorado sutil
-            border: '1px solid #d4af37', // Borde dorado
-            width: '350px',
+            backgroundColor: '#ffffff', // Tarjeta blanca
+            padding: '50px 40px',
+            borderRadius: '20px',
+            boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)', // Sombra suave
+            borderTop: '6px solid #d4af37', // Detalle dorado arriba
+            width: '100%',
+            maxWidth: '400px',
             textAlign: 'center'
+        },
+        titulo: {
+            color: '#1a1a1a',
+            fontSize: '26px',
+            margin: '10px 0 5px 0',
+            fontWeight: 'bold',
+        },
+        subtitulo: {
+            color: '#d4af37',
+            fontSize: '14px',
+            marginBottom: '35px',
+            fontWeight: '600',
+            letterSpacing: '1px'
         },
         input: {
             width: '100%',
-            padding: '12px',
+            padding: '12px 15px',
             margin: '10px 0',
-            backgroundColor: '#333',
-            border: '1px solid #444',
-            color: '#fff',
-            borderRadius: '5px',
-            boxSizing: 'border-box'
+            backgroundColor: '#fff',
+            border: '1px solid #ddd',
+            color: '#333',
+            borderRadius: '8px',
+            boxSizing: 'border-box',
+            fontSize: '15px',
+            outline: 'none',
         },
         boton: {
             width: '100%',
-            padding: '12px',
-            backgroundColor: '#d4af37', // Dorado
+            padding: '14px',
+            backgroundColor: '#d4af37',
             color: '#000',
             border: 'none',
-            borderRadius: '5px',
+            borderRadius: '8px',
             fontWeight: 'bold',
+            fontSize: '15px',
             cursor: 'pointer',
             marginTop: '20px',
-            transition: '0.3s'
+            transition: '0.3s',
+            boxShadow: '0 4px 10px rgba(212, 175, 55, 0.2)'
+        },
+        error: {
+            color: '#ff4d4d',
+            fontSize: '13px',
+            marginTop: '15px'
         }
     };
 
     return (
         <div style={estilos.contenedor}>
             <div style={estilos.tarjeta}>
-                <h2 style={{ color: '#d4af37', marginBottom: '20px' }}>🏥 Clínica Bolivia</h2>
-                <h4 style={{ color: '#fff' }}>Iniciar Sesión</h4>
+                <span style={{fontSize: '50px'}}>🏥</span>
+                <h1 style={estilos.titulo}>CLÍNICA BOLIVIA</h1>
+                <p style={estilos.subtitulo}>PANEL DE CONTROL</p>
+                
                 <form onSubmit={handleLogin}>
                     <input 
                         type="text" 
@@ -90,8 +114,17 @@ const Login = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
-                    {error && <p style={{ color: '#ff4d4d', fontSize: '12px' }}>{error}</p>}
-                    <button type="submit" style={estilos.boton}>INGRESAR</button>
+                    
+                    {error && <p style={estilos.error}>{error}</p>}
+                    
+                    <button 
+                        type="submit" 
+                        style={estilos.boton}
+                        onMouseOver={(e) => e.target.style.backgroundColor = '#b8860b'}
+                        onMouseOut={(e) => e.target.style.backgroundColor = '#d4af37'}
+                    >
+                        INGRESAR
+                    </button>
                 </form>
             </div>
         </div>
