@@ -6,21 +6,25 @@ const sequelize = require('./database');
 const Paciente = require('./modelos/Paciente');
 const Medico = require('./modelos/Medico');
 const Cita = require('./modelos/Cita');
+const Usuario = require('./modelos/Usuario'); // <-- NUEVO MODELO PARA EL LOGIN
 
 // --- CONFIGURACIÓN DE RELACIONES ---
-// Un Paciente tiene muchas Citas, una Cita pertenece a un Paciente
+// Relaciones existentes
 Paciente.hasMany(Cita, { foreignKey: 'pacienteId' });
 Cita.belongsTo(Paciente, { foreignKey: 'pacienteId' });
 
-// Un Médico tiene muchas Citas, una Cita pertenece a un Médico
 Medico.hasMany(Cita, { foreignKey: 'medicoId' });
 Cita.belongsTo(Medico, { foreignKey: 'medicoId' });
+
+// Nota: No necesitamos relacionar Usuario con los demás por ahora, 
+// ya que el usuario es quien opera el sistema.
 // ------------------------------------
 
 // IMPORTACIÓN DE RUTAS
 const pacienteRutas = require('./rutas/pacienteRutas');
 const medicoRutas = require('./rutas/medicoRutas');
 const citaRutas = require('./rutas/citaRutas');
+const authRutas = require('./rutas/authRutas'); // <-- NUEVAS RUTAS DE AUTENTICACIÓN
 
 const app = express();
 
@@ -32,10 +36,11 @@ app.use(express.json());
 app.use('/api/pacientes', pacienteRutas);
 app.use('/api/medicos', medicoRutas);
 app.use('/api/citas', citaRutas);
+app.use('/api/auth', authRutas); // <-- ACTIVACIÓN DE RUTAS PARA LOGIN/REGISTRO
 
 // Ruta de bienvenida
 app.get('/', (req, res) => {
-    res.send('🏥 Servidor de la Clínica Bolivia funcionando correctamente');
+    res.send('🏥 Servidor de la Clínica Bolivia funcionando correctamente con Seguridad JWT');
 });
 
 // FUNCIÓN DE INICIO
@@ -45,9 +50,9 @@ async function iniciarProyecto() {
         await sequelize.authenticate();
         console.log('✅ Conexión a PostgreSQL exitosa.');
 
-        // Sincronizar tablas y aplicar relaciones (creará las columnas pacienteId y medicoId)
+        // Sincronizar tablas (incluyendo la nueva tabla Usuarios)
         await sequelize.sync({ alter: true });
-        console.log('📂 Todas las tablas (Pacientes, Médicos, Citas) y sus relaciones han sido sincronizadas.');
+        console.log('📂 Todas las tablas (Pacientes, Médicos, Citas, Usuarios) sincronizadas.');
 
         // Encender el servidor
         const PORT = 3000;
@@ -56,9 +61,7 @@ async function iniciarProyecto() {
         });
 
     } catch (error) {
-        console.error('❌ ERROR DETALLADO:', error.name);
-        console.error('❌ MENSAJE:', error.message);
-        console.error('❌ DETALLE TECNICO:', error);
+        console.error('❌ ERROR AL INICIAR:', error.message);
     }
 }
 
