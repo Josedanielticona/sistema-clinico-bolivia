@@ -1,65 +1,63 @@
-# Mejora Técnica del Sistema de Gestión Hospitalaria - Clinica Bolivia
+# Mejora del Sistema Hospitalario - Clinica Bolivia
 
-Este archivo describe la mejora estructural realizada al sistema de la Clinica Bolivia, la cual ha sido migrada a una arquitectura de microservicios mediante Docker para asegurar su portabilidad y estabilidad.
+Este proyecto ha sido optimizado y contenedorizado mediante Docker para garantizar un despliegue rápido y sin errores de configuración en cualquier entorno.
 
-## 1. Arquitectura y Componentes
-El sistema se ha desglosado en tres servicios independientes:
-* **Motor de Base de Datos:** PostgreSQL 15, configurado para persistencia de datos mediante volúmenes.
-* **Backend (Servidor):** API REST construida en Node.js, encargada de la lógica de negocio y seguridad.
-* **Frontend (Interfaz):** Aplicación SPA en React (Vite) optimizada para Node.js 20.
+## Requisitos previos
 
-## 2. Requisitos Previos para el Despliegue
-Para ejecutar el sistema, es indispensable que el equipo evaluador tenga instalado:
-* **Docker Desktop** (versión actualizada).
-* Motor de Docker en estado "Running".
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado y en ejecución.
+- Git (opcional, si se descarga mediante repositorio).
 
-## 3. Instrucciones para Levantar el Servidor
-Siga estos pasos exactos para visualizar el sistema funcionando:
+---
 
-1. Sitúese en el directorio raíz del proyecto mediante una terminal.
-2. Ejecute el comando de orquestación:
-   ```bash
-   docker compose up --build
-   Espere a que la terminal muestre el mensaje "Engine Running" o los registros de los tres servicios (db, backend, frontend) sin errores.
+## Instrucciones de Despliegue (Docker)
 
-4. Acceso y Credenciales de Usuario
-Debido a que el entorno de contenedores inicializa la base de datos desde cero para garantizar la limpieza de la evaluación, el acceso requiere un paso previo de registro:
+Siga estos pasos para levantar todo el sistema por primera vez:
 
-Paso A: Creación de Usuario Administrador
-Dado que no existen usuarios previos, el evaluador debe registrar un perfil inicial. Utilice una herramienta de peticiones (como Thunder Client en VS Code o Postman) con los siguientes datos:
+### 1. Preparar el proyecto
+* **Opción 1:** Clonar el repositorio mediante Git.
+* **Opción 2:** Descomprimir la carpeta del proyecto enviada y situarse en la raíz (donde se encuentra el archivo `docker-compose.yml`).
 
-URL de Registro: http://localhost:3000/api/auth/registrar
+### 2. Levantar todo el sistema
+Dentro de la carpeta principal, abra una terminal (CMD, PowerShell o Git Bash) y ejecute el siguiente comando:
+
+```bash
+docker-compose up --build
+3. Esperar la construcción y abrir el sistema
+La primera vez puede tardar unos minutos mientras Docker descarga las imágenes de Node.js y PostgreSQL, e instala las dependencias de React. Una vez finalizado, podrá acceder a los servicios en:
+
+Interfaz Web (Frontend): http://localhost:5173
+
+Servidor de Datos (API): http://localhost:3000
+
+Guía de Configuración Inicial (Obligatorio)
+Como el sistema inicia con una base de datos limpia dentro del contenedor, debe crear su usuario de acceso siguiendo estos pasos:
+
+1. Registro del Administrador
+Utilice una herramienta como Thunder Client (en VS Code) o Postman para enviar una petición de registro:
 
 Método: POST
+
+URL: http://localhost:3000/api/auth/registrar
 
 Cuerpo (JSON):
 
 JSON
 {
-  "nombre": "Administrador Sistema",
-  "usuario": "adminjose",
-  "password": "031299",
+  "nombre": "Jose Daniel",
+  "usuario": "admin",
+  "password": "123",
   "rol": "admin"
 }
-Paso B: Inicio de Sesión
-Una vez registrado, acceda a la interfaz web en:
+2. Inicio de Sesión
+Vaya a http://localhost:5173 e ingrese con las credenciales creadas:
 
-URL: http://localhost:5173
+Usuario: admin
 
-Usuario: adminjose
+Contraseña: 123
 
-Contraseña: 031299
+Notas Técnicas de la Mejora
+Persistencia: Los datos se almacenan en volúmenes de Docker. Si desea resetear la base de datos por completo, ejecute docker-compose down -v.
 
-5. Guía de Uso y Funcionalidades por Rol
-La mejora del sistema permite visualizar diferentes interfaces según el rol asignado durante el registro:
+Compatibilidad: El sistema utiliza Node.js v20 para asegurar el funcionamiento correcto de Vite y React.
 
-Interfaz de Administrador: Al ingresar con el rol 'admin', el menú lateral habilitará la gestión de personal médico, administración de pacientes y control total de citas médicas.
-
-Interfaz de Médico: Si registra un usuario con el rol 'medico', el sistema restringirá las funciones administrativas, permitiendo únicamente el registro de pacientes nuevos y la consulta de la agenda de citas propia.
-
-6. Mantenimiento y Reseteo del Entorno
-Si durante la evaluación se requiere limpiar la base de datos y comenzar de nuevo el proceso de registro, ejecute en la terminal:
-
-Bash
-docker compose down -v
-Este comando detendrá los servicios y eliminará el volumen de datos persistente, permitiendo una nueva instalación limpia.
+Roles: El sistema adapta la interfaz automáticamente. El rol admin visualiza toda la gestión, mientras que el rol medico solo visualiza su agenda y registro de pacientes.
