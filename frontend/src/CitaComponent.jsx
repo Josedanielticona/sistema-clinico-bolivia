@@ -10,6 +10,9 @@ function CitaComponent() {
   const [pacientes, setPacientes] = useState([]);
   const [medicos, setMedicos] = useState([]);
 
+  // Obtenemos el rol para las restricciones visuales
+  const rol = localStorage.getItem('rol');
+
   const cargarDatos = async () => {
     try {
       const resP = await axios.get('http://localhost:3000/api/pacientes');
@@ -23,7 +26,9 @@ function CitaComponent() {
     }
   };
 
-  useEffect(() => { cargarDatos(); }, []);
+  useEffect(() => { 
+    cargarDatos(); 
+  }, []);
 
   const agendarCita = async (e) => {
     e.preventDefault();
@@ -35,6 +40,17 @@ function CitaComponent() {
     } catch (error) { alert('Error al agendar'); }
   };
 
+  const eliminarCita = async (id) => {
+    if (window.confirm("¿Estás seguro de eliminar esta cita?")) {
+      try {
+        await axios.delete(`http://localhost:3000/api/citas/${id}`);
+        cargarDatos();
+      } catch (error) {
+        alert("Error al eliminar la cita");
+      }
+    }
+  };
+
   const estilos = {
     card: { backgroundColor: '#fff', padding: '25px', borderRadius: '15px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', marginBottom: '30px' },
     select: { padding: '10px', marginRight: '10px', borderRadius: '8px', border: '1px solid #ddd', backgroundColor: '#fff', outline: 'none' },
@@ -43,7 +59,8 @@ function CitaComponent() {
     contenedorLista: { marginTop: '15px', backgroundColor: '#fafafa', borderRadius: '10px', padding: '5px 15px' },
     itemCita: { padding: '15px 0', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
     textoPrincipal: { color: '#333', fontSize: '15px' },
-    badgeMotivo: { backgroundColor: '#d4af37', color: '#000', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', boxShadow: '2px 2px 5px rgba(0,0,0,0.1)' }
+    badgeMotivo: { backgroundColor: '#d4af37', color: '#000', padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold', boxShadow: '2px 2px 5px rgba(0,0,0,0.1)' },
+    btnBorrar: { backgroundColor: '#ff4d4d', color: '#fff', border: 'none', padding: '5px 10px', borderRadius: '5px', cursor: 'pointer', marginLeft: '10px', fontSize: '12px' }
   };
 
   return (
@@ -84,9 +101,21 @@ function CitaComponent() {
               <span style={{ fontWeight: '600' }}>{c.Paciente?.nombre}</span> con el 
               <span style={{ color: '#b8860b', fontWeight: 'bold' }}> Dr. {c.Medico?.nombre}</span>
             </span>
-            <span style={estilos.badgeMotivo}>
-              {c.motivo ? c.motivo.toUpperCase() : 'CONSULTA'}
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span style={estilos.badgeMotivo}>
+                {c.motivo ? c.motivo.toUpperCase() : 'CONSULTA'}
+              </span>
+              
+              {/* RESTRICCIÓN: Solo el administrador puede ver el botón de eliminar cita */}
+              {rol === 'admin' && (
+                <button 
+                  onClick={() => eliminarCita(c.id_cita)} 
+                  style={estilos.btnBorrar}
+                >
+                  Eliminar
+                </button>
+              )}
+            </div>
           </div>
         )) : (
           <p style={{ padding: '20px', textAlign: 'center', color: '#999' }}>No hay citas agendadas actualmente.</p>

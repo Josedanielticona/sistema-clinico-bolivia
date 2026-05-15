@@ -71,7 +71,6 @@ function Dashboard() {
     }
   };
 
-  // --- ESTILOS REUTILIZABLES ---
   const estilos = {
     contenedor: { padding: '30px', backgroundColor: '#f0f2f5', minHeight: '100vh', fontFamily: 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif' },
     header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#000', color: '#d4af37', padding: '15px 30px', borderRadius: '12px', boxShadow: '0 4px 10px rgba(0,0,0,0.3)', marginBottom: '30px' },
@@ -97,7 +96,7 @@ function Dashboard() {
       </div>
       
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-        {/* FORMULARIO */}
+        {/* FORMULARIO DE PACIENTES */}
         <div style={estilos.card}>
           <h2 style={{ marginTop: 0, color: '#333', borderLeft: '5px solid #d4af37', paddingLeft: '15px' }}>
             {editandoId ? '📝 Editar Paciente' : '👤 Registro de Pacientes'}
@@ -128,6 +127,7 @@ function Dashboard() {
                   <td style={estilos.td}>{p.nombre} {p.apellido}</td>
                   <td style={estilos.td}>
                     <button onClick={() => iniciarEdicion(p)} style={{ ...estilos.btnAccion, backgroundColor: '#e2e2e2' }}>Editar</button>
+                    {/* Solo el Admin puede borrar pacientes */}
                     {rol === 'admin' && (
                         <button onClick={() => borrarPaciente(p.id_paciente)} style={{ ...estilos.btnAccion, backgroundColor: '#ff4d4d', color: '#fff' }}>Borrar</button>
                     )}
@@ -140,9 +140,15 @@ function Dashboard() {
 
         <hr style={{ margin: '40px 0', border: '0', borderTop: '2px solid #ddd' }} />
         
-        {/* OTROS COMPONENTES */}
-        <div style={{opacity: '0.9'}}><MedicoComponent /></div>
-        <hr style={{ margin: '40px 0', border: '0', borderTop: '2px solid #ddd' }} />
+        {/* SECCIÓN GESTIÓN DE MÉDICOS: Oculta para el rol médico */}
+        {rol !== 'medico' && (
+          <>
+            <div style={{opacity: '0.9'}}><MedicoComponent /></div>
+            <hr style={{ margin: '40px 0', border: '0', borderTop: '2px solid #ddd' }} />
+          </>
+        )}
+        
+        {/* GESTIÓN DE CITAS: Visible para todos */}
         <div style={{opacity: '0.9'}}><CitaComponent /></div>
       </div>
     </div>

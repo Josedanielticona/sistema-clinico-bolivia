@@ -17,9 +17,13 @@ const Usuario = sequelize.define('Usuario', {
         allowNull: false
     },
     rol: {
-        type: DataTypes.ENUM('admin', 'funcionario'), // Definimos los dos niveles de acceso
+        // ACTUALIZADO: Añadimos 'medico' a la lista de permitidos
+        type: DataTypes.ENUM('admin', 'funcionario', 'medico'), 
         defaultValue: 'funcionario'
     }
+}, {
+    tableName: 'usuarios', // Asegura que use el nombre de tabla correcto
+    timestamps: false      // Desactiva si no usas createdAt/updatedAt
 });
 
 module.exports = Usuario;
