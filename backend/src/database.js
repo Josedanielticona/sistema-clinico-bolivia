@@ -2,7 +2,7 @@ const { Sequelize } = require('sequelize');
 
 // Conexión a la base de datos de tu clínica
 const sequelize = new Sequelize('clinica_bolivia', 'postgres', 'jose123', {
-  host: 'localhost',
+  host: 'db',
   dialect: 'postgres',
   logging: false, 
 });

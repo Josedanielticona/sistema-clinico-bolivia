@@ -8,7 +8,7 @@ services:
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: tu_password_segura # Cámbiala por la tuya
+      POSTGRES_PASSWORD: jose123 # Cámbiala por la tuya
       POSTGRES_DB: clinica_bolivia
     ports:
       - "5432:5432"
@@ -23,7 +23,7 @@ services:
       - "3000:3000"
     environment:
       # Aquí le decimos al backend que se conecte al servicio "db"
-      DATABASE_URL: postgres://postgres:tu_password_segura@db:5432/clinica_bolivia
+      DATABASE_URL: postgres://postgres:jose123123:5432/clinica_bolivia
       JWT_SECRET: CLAVE_SECRETA_SUPER_SEGURA
     depends_on:
       - db
@@ -34,6 +34,7 @@ services:
     container_name: clinica_web
     ports:
       - "5173:5173"
+    tty: true
     stdin_open: true # Necesario para Vite en Docker
     depends_on:
       - backend
